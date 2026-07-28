@@ -1,6 +1,7 @@
 node_modules/
 dist/
 build/
+dev-dist/
 .env
 .env.local
 .env.*.local
@@ -13,3 +14,5 @@ npm-debug.log*
 coverage/
 .vercel
 prisma/migrations/dev.db*
+brand/
+docs/
