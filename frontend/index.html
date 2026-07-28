@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" data-theme="ember">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <title>Nudge — gently pushes you forward</title>
+    <meta name="description" content="A to-do app that nudges you forward instead of nagging. Tasks, reminders, and Google Calendar in one place." />
+
+    <link rel="icon" type="image/svg+xml" href="/icons/app-icon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png" />
+    <link rel="apple-touch-icon" href="/icons/icon-180.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!--
+      Matches --bg-canvas so the browser chrome doesn't flash. A single tag with
+      NO media attribute: the media-scoped variants follow the OS, which would
+      contradict an explicit in-app theme choice. ThemeContext keeps this in
+      step with the actual token value.
+    -->
+    <meta name="theme-color" content="#FEFBF8" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--
+      Set the theme before first paint. Without this the app renders light for
+      one frame and then snaps to dark, which is very visible on a warm canvas.
+    -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('nudge-mode');
+          var mode =
+            saved ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-mode', mode);
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute('content', mode === 'dark' ? '#1D1813' : '#FEFBF8');
+        } catch (e) {
+          document.documentElement.setAttribute('data-mode', 'light');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

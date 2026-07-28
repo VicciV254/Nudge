@@ -1,0 +1,22 @@
+# Local Postgres, for working offline or without touching your Neon branch.
+# Point DIRECT_URL and DATABASE_URL at this, then `npm run db:migrate`.
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: nudge-db
+    environment:
+      POSTGRES_USER: nudge
+      POSTGRES_PASSWORD: nudge
+      POSTGRES_DB: nudge
+    ports:
+      - '5432:5432'
+    volumes:
+      - nudge_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U nudge']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  nudge_pgdata:

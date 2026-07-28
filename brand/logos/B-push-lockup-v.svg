@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.0 759.7" width="512" height="760" fill="none">
+<g><defs><linearGradient id="gBB-pushv" x1="130" y1="140" x2="380" y2="380" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#E9A052"/><stop offset="1" stop-color="#C16900"/></linearGradient></defs>
+
+  <path d="M 168 118 A 172 172 0 0 1 168 394" stroke="url(#gBB-pushv)" stroke-width="74"
+        stroke-linecap="round" fill="none"/>
+  <circle cx="384" cy="256" r="62" fill="#E9A052"/>
+  <g stroke="#C16900" stroke-width="36" stroke-linecap="round" fill="none">
+    <path d="M 92 196 L 124 196" opacity="0.34"/>
+    <path d="M 74 316 L 122 316" opacity="0.20"/>
+  </g>
+</g>
+<g transform="translate(35.84,563.20) scale(0.8020)">
+<g transform="translate(21.50,15.50)" fill="none" stroke="#1D1813" stroke-width="19.0" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M 0.00 140.00 L 0.00 71.00"/>
+  <path d="M 0.00 71.00 A 31.00 31.00 0 1 1 62.00 71.00"/>
+  <path d="M 62.00 71.00 L 62.00 140.00"/>
+  <path d="M 111.00 40.00 L 111.00 109.00"/>
+  <path d="M 111.00 109.00 A 31.00 31.00 0 1 0 173.00 109.00"/>
+  <path d="M 173.00 40.00 L 173.00 140.00"/>
+  <path d="M 222.00 109.00 A 31.00 31.00 0 1 1 284.00 109.00 A 31.00 31.00 0 1 1 222.00 109.00 Z"/>
+  <path d="M 284.00 6.00 L 284.00 140.00"/>
+  <path d="M 333.00 109.00 A 31.00 31.00 0 1 1 395.00 109.00 A 31.00 31.00 0 1 1 333.00 109.00 Z"/>
+  <path d="M 395.00 40.00 L 395.00 183.20 A 24.80 24.80 0 0 1 359.04 190.14"/>
+  <path d="M 444.00 109.00 L 506.00 109.00"/>
+  <path d="M 506.00 109.00 A 31.00 31.00 0 1 0 495.74 132.04"/>
+</g>
+</g>
+</svg>

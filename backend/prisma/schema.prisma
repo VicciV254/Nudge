@@ -1,0 +1,163 @@
+// Nudge — Prisma schema for Neon (serverless Postgres)
+//
+// Notes on choices that differ from a naive schema:
+//  * Enums instead of free-text status/priority. Postgres enforces them, and it
+//    stops "High"/"high"/"HIGH" drifting into the data.
+//  * directUrl — Prisma runs migrations over a direct connection while the app
+//    uses the pooled one. Without this, `migrate` fails against PgBouncer.
+//  * Compound indexes matched to the queries the app actually runs.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // pooled  (…-pooler.…)
+  directUrl = env("DIRECT_URL") // unpooled, for migrations
+}
+
+enum Priority {
+  low
+  normal
+  high
+  urgent
+}
+
+enum SyncStatus {
+  off
+  pending
+  synced
+  error
+  conflict
+}
+
+enum Plan {
+  free
+  premium
+  pro
+}
+
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  displayName  String
+  passwordHash String?
+  avatarUrl    String?
+  timezone     String  @default("UTC")
+
+  // OAuth
+  googleId String? @unique
+
+  // Google Calendar integration. Tokens are stored encrypted at rest —
+  // see src/utils/crypto.js. Never log these fields.
+  googleAccessToken  String?
+  googleRefreshToken String?
+  googleTokenExpiry  DateTime?
+  calendarId         String?  @default("primary")
+  calendarSyncEnabled Boolean @default(false)
+  calendarSyncDirection String @default("both") // both | push | pull
+  defaultReminderMinutes Int   @default(30)
+
+  // Incremental sync cursor. Google only issues nextSyncToken on the FINAL
+  // page of a list, and rejects it alongside timeMin/timeMax/q (HTTP 400).
+  // A 410 means it went stale -> discard and run a full resync.
+  syncToken       String?
+  lastSyncAt      DateTime?
+
+  // events.watch push channel. Channels expire and Google has no renewal
+  // endpoint — you must open a fresh one and let the old overlap.
+  channelId         String?   @unique
+  channelResourceId String?
+  channelToken      String?   // verifies X-Goog-Channel-Token on webhooks
+  channelExpiry     DateTime?
+
+  plan Plan @default(free)
+
+  // Denormalised counters. Cheap to read on every dashboard load; updated in
+  // the same transaction as the task write so they cannot drift.
+  tasksCreated   Int @default(0)
+  tasksCompleted Int @default(0)
+  streak         Int @default(0)
+
+  lastActiveAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tasks    Task[]
+  sessions Session[]
+
+  @@map("users")
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(200)
+  description String?
+  completed   Boolean  @default(false)
+  priority    Priority @default(normal)
+  category    String?
+  tags        String[] @default([])
+
+  dueDate     DateTime?
+  completedAt DateTime?
+
+  // Google Calendar bridge
+  calendarSync    Boolean    @default(false)
+  calendarEventId String?
+  syncStatus      SyncStatus @default(off)
+  syncedAt        DateTime?
+  // Guards against an infinite sync loop: we hash the payload we send to
+  // Google, so an incoming webhook that echoes our own write can be ignored.
+  syncHash        String?
+  revision        Int        @default(1)
+  // Set when Google's copy diverged from ours while both changed. The row is
+  // parked for the user to resolve rather than silently overwritten.
+  conflictData    Json?
+
+  // ---- recurrence ----
+  // An RFC 5545 RRULE, e.g. "FREQ=WEEKLY;BYDAY=MO,FR". Only the SERIES row
+  // carries this; generated instances do not, so they can't re-spawn.
+  recurrence      String?
+  // The series anchor: fixes the wall-clock time of day and (for weekly rules
+  // without BYDAY) the weekday. Never moves when an instance is rescheduled.
+  recurrenceStart DateTime?
+  // Set on the series once the rule is exhausted (COUNT/UNTIL reached).
+  recurrenceEnded Boolean   @default(false)
+
+  // Instances point back at their series. onDelete: Cascade means deleting the
+  // series removes its instances; SetNull would orphan them silently.
+  seriesId        String?
+  series          Task?     @relation("TaskSeries", fields: [seriesId], references: [id], onDelete: Cascade)
+  instances       Task[]    @relation("TaskSeries")
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Matched to real queries: the task list is always scoped to a user and
+  // usually filtered by completion, then ordered by due date.
+  @@index([userId, completed, dueDate])
+  @@index([userId, createdAt])
+  @@index([calendarEventId])
+  @@index([seriesId])
+  // Drives the "which series owe an instance?" sweep.
+  @@index([userId, recurrence, recurrenceEnded])
+  @@map("tasks")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshToken String   @unique
+  userAgent    String?
+  ipAddress    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@map("sessions")
+}

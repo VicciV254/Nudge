@@ -1,0 +1,254 @@
+/* =============================================================
+   Nudge — design tokens (Ember theme, n-in-motion brand)
+   Generated from the brand system. Do not hand-edit.
+   All colour pairs verified >= WCAG AA (78 core + 68 calendar).
+   ============================================================= */
+
+:root {
+  /* ---------- primitive ramps ---------- */
+  --ember-50: #FCF7EF;
+  --ember-100: #FAEDDC;
+  --ember-200: #F6DAB8;
+  --ember-300: #F0C08B;
+  --ember-400: #E9A052;
+  --ember-500: #DD7F00;
+  --ember-600: #C16900;
+  --ember-700: #A45400;
+  --ember-800: #874000;
+  --ember-900: #6E2F00;
+  --ember-950: #4D1B00;
+
+  --sand-50: #FEFBF8;
+  --sand-100: #F9F5F0;
+  --sand-200: #EDE7E0;
+  --sand-300: #DDD5CD;
+  --sand-400: #C2B9AF;
+  --sand-450: #9D9388;
+  --sand-500: #A4998E;
+  --sand-550: #7C7268;
+  --sand-600: #847A6F;
+  --sand-700: #655C52;
+  --sand-800: #4A423A;
+  --sand-900: #332D26;
+  --sand-950: #1D1813;
+
+  --green-50: #F3F9F5;
+  --green-100: #E6F3EB;
+  --green-200: #CDE6D6;
+  --green-300: #AED5BD;
+  --green-400: #89C19F;
+  --green-500: #63AC83;
+  --green-600: #44966B;
+  --green-700: #2F7E56;
+  --green-800: #236544;
+  --green-900: #1B4F35;
+  --green-950: #103522;
+
+  --amber-50: #FBF7F1;
+  --amber-100: #F6EEE1;
+  --amber-200: #ECDDC4;
+  --amber-300: #DEC69F;
+  --amber-400: #CEAC74;
+  --amber-500: #BC9247;
+  --amber-600: #A77A20;
+  --amber-700: #8D6401;
+  --amber-800: #725000;
+  --amber-900: #5A3E01;
+  --amber-950: #3C2901;
+
+  --red-50: #FFF5F4;
+  --red-100: #FEEAE8;
+  --red-200: #FBD4D0;
+  --red-300: #F4B9B3;
+  --red-400: #EA9992;
+  --red-500: #DC7972;
+  --red-600: #C85E58;
+  --red-700: #AB4945;
+  --red-800: #8A3936;
+  --red-900: #6D2C29;
+  --red-950: #4A1C1A;
+
+  --blue-50: #F3F8FE;
+  --blue-100: #E6F0FC;
+  --blue-200: #CEE1F7;
+  --blue-300: #AFCDF0;
+  --blue-400: #8BB6E6;
+  --blue-500: #689ED9;
+  --blue-600: #4C86C6;
+  --blue-700: #386FAA;
+  --blue-800: #2B598A;
+  --blue-900: #21456D;
+  --blue-950: #142E4A;
+
+  /* ---------- radii ---------- */
+  --radius-xs: 6px;  --radius-sm: 10px; --radius-md: 14px;
+  --radius-lg: 20px; --radius-xl: 28px; --radius-full: 999px;
+
+  /* ---------- spacing ---------- */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+
+  /* ---------- motion ----------
+     The logo's trail lines are the motion language: things move forward
+     and settle. Springs are reserved for task completion. */
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --dur-fast: 120ms; --dur-base: 200ms; --dur-slow: 320ms;
+
+  /* ---------- type ---------- */
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --text-display: 2.75rem; --text-title: 1.6875rem; --text-lg: 1.0625rem;
+  --text-base: .9375rem;   --text-sm: .8125rem;     --text-xs: .6875rem;
+
+  /* ---------- z ---------- */
+  --z-dropdown: 100; --z-sticky: 200; --z-modal: 400; --z-toast: 500;
+}
+
+/* Ember — light (default) */
+[data-theme="ember"], :root {
+  --bg-canvas: #FEFBF8;
+  --bg-surface: #FFFFFF;
+  --bg-raised: #FFFFFF;
+  --bg-sunken: #F9F5F0;
+  --bg-hover: #F9F5F0;
+  --bg-active: #EDE7E0;
+  --border-subtle: #EDE7E0;
+  --border-default: #DDD5CD;
+  --border-strong: #9D9388;
+  --text-primary: #332D26;
+  --text-secondary: #655C52;
+  --text-muted: #7C7268;
+  /* Muted text that sits on a *tinted* surface (bg-sunken / bg-active /
+     brand-subtle-bg). --text-muted is solved against the canvas only and drops
+     to 3.8:1 on bg-active, so tinted contexts need this darker step. */
+  --text-muted-on-tint: #655C52;
+  --text-inverse: #FFFFFF;
+  --text-disabled: #9D9388;
+  --brand-solid: #A45400;
+  --brand-solid-hover: #874000;
+  --brand-text: #874000;
+  --brand-subtle-bg: #FCF7EF;
+  --brand-subtle-border: #F6DAB8;
+  --brand-ring: #C16900;
+  --success: #2F7E56;
+  --success-bg: #F3F9F5;
+  --warning: #8D6401;
+  --warning-bg: #FBF7F1;
+  --danger: #AB4945;
+  --danger-bg: #FFF5F4;
+  --info: #386FAA;
+  --info-bg: #F3F8FE;
+  --sync-ok: #2F7E56;
+  --sync-ok-bg: #F3F9F5;
+  --sync-pending: #8D6401;
+  --sync-pending-bg: #FBF7F1;
+  --sync-error: #AB4945;
+  --sync-error-bg: #FFF5F4;
+  --sync-conflict: #A45400;
+  --sync-conflict-bg: #FCF7EF;
+  --sync-off: #786E64;
+  --sync-off-bg: #F9F5F0;
+  --prio-urgent: #B02331;
+  --prio-urgent-bg: #FFF5F4;
+  --prio-high: #A96000;
+  --prio-high-bg: #FCF7EF;
+  --prio-normal: #697270;
+  --prio-normal-bg: #F9F5F0;
+  --prio-low: #1F6DB9;
+  --prio-low-bg: #F3F8FE;
+  --grid-line: #EDE7E0;
+  --grid-line-hour: #DDD5CD;
+  --grid-now: #C16900;
+  --grid-today-bg: #FCF7EF;
+  --grid-busy-bg: #EDE7E0;
+  --grid-free-bg: #FFFFFF;
+  --evt-nudge-bg: #FAEDDC;
+  --evt-nudge-br: #C16900;
+  --evt-nudge-tx: #6E2F00;
+  --evt-ext-bg: #F9F5F0;
+  --evt-ext-br: #958B81;
+  --evt-ext-tx: #4A423A;
+  --evt-done-bg: #F3F9F5;
+  --evt-done-br: #44966B;
+  --evt-done-tx: #236544;
+}
+
+/* Ember — dark */
+[data-theme="ember"][data-mode="dark"] {
+  --bg-canvas: #1D1813;
+  --bg-surface: #332D26;
+  --bg-raised: #4A423A;
+  --bg-sunken: #000000;
+  --bg-hover: #4A423A;
+  --bg-active: #655C52;
+  --border-subtle: #4A423A;
+  --border-default: #655C52;
+  --border-strong: #847A6F;
+  --text-primary: #F9F5F0;
+  --text-secondary: #DDD5CD;
+  --text-muted: #C2B9AF;
+  --text-muted-on-tint: #DDD5CD;
+  --text-inverse: #1D1813;
+  --text-disabled: #847A6F;
+  --brand-solid: #E9A052;
+  --brand-solid-hover: #F0C08B;
+  --brand-text: #F0C08B;
+  --brand-subtle-bg: #4D1B00;
+  --brand-subtle-border: #874000;
+  --brand-ring: #E9A052;
+  --success: #AED5BD;
+  --success-bg: #103522;
+  --warning: #DEC69F;
+  --warning-bg: #3C2901;
+  --danger: #F4B9B3;
+  --danger-bg: #4A1C1A;
+  --info: #AFCDF0;
+  --info-bg: #142E4A;
+  --sync-ok: #AED5BD;
+  --sync-ok-bg: #103522;
+  --sync-pending: #DEC69F;
+  --sync-pending-bg: #3C2901;
+  --sync-error: #F4B9B3;
+  --sync-error-bg: #4A1C1A;
+  --sync-conflict: #F0C08B;
+  --sync-conflict-bg: #4D1B00;
+  --sync-off: #C2B9AF;
+  --sync-off-bg: #4A423A;
+  --prio-urgent: #FD7273;
+  --prio-urgent-bg: #4A1C1A;
+  --prio-high: #FB9D30;
+  --prio-high-bg: #4D1B00;
+  --prio-normal: #A8B3B0;
+  --prio-normal-bg: #4A423A;
+  --prio-low: #6EB2FE;
+  --prio-low-bg: #142E4A;
+  --grid-line: #4A423A;
+  --grid-line-hour: #655C52;
+  --grid-now: #E9A052;
+  --grid-today-bg: #4D1B00;
+  --grid-busy-bg: #4A423A;
+  --grid-free-bg: #332D26;
+  --evt-nudge-bg: #6E2F00;
+  --evt-nudge-br: #E9A052;
+  --evt-nudge-tx: #FAEDDC;
+  --evt-ext-bg: #4A423A;
+  --evt-ext-br: #988E83;
+  --evt-ext-tx: #EDE7E0;
+  --evt-done-bg: #103522;
+  --evt-done-br: #63AC83;
+  --evt-done-tx: #CDE6D6;
+}
+
+/* Shadows are warm-tinted, not neutral grey — they sit on a warm canvas. */
+:root {
+  --shadow-sm: 0 1px 2px rgb(28 24 19 / .06), 0 1px 1px rgb(28 24 19 / .04);
+  --shadow-md: 0 4px 12px rgb(28 24 19 / .08), 0 1px 3px rgb(28 24 19 / .06);
+  --shadow-lg: 0 12px 32px rgb(28 24 19 / .12), 0 4px 8px rgb(28 24 19 / .06);
+}
+[data-mode="dark"] {
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / .40);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / .45), 0 1px 3px rgb(0 0 0 / .30);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / .55), 0 4px 8px rgb(0 0 0 / .35);
+}

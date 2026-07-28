@@ -1,0 +1,15 @@
+{
+  "name": "nudge",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Nudge — a to-do app that gently pushes you forward.",
+  "type": "module",
+  "scripts": {
+    "audit:contrast": "node scripts/audit-contrast.mjs",
+    "test:backend": "cd backend && npm test",
+    "build:frontend": "cd frontend && npm run build"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.0"
+  }
+}

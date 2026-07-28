@@ -1,0 +1,44 @@
+{
+  "priority-urgent": {
+    "nudge": "#B02331",
+    "colorId": "11",
+    "google": "Tomato",
+    "googleHex": "#D50000",
+    "dE": 0.064
+  },
+  "priority-high": {
+    "nudge": "#A96000",
+    "colorId": "5",
+    "google": "Banana",
+    "googleHex": "#F6BF26",
+    "dE": 0.175
+  },
+  "priority-normal": {
+    "nudge": "#697270",
+    "colorId": "8",
+    "google": "Graphite",
+    "googleHex": "#616161",
+    "dE": 0.032
+  },
+  "priority-low": {
+    "nudge": "#1F6DB9",
+    "colorId": "9",
+    "google": "Blueberry",
+    "googleHex": "#3F51B5",
+    "dE": 0.061
+  },
+  "completed": {
+    "nudge": "#2F7E56",
+    "colorId": "10",
+    "google": "Basil",
+    "googleHex": "#0B8043",
+    "dE": 0.035
+  },
+  "brand-default": {
+    "nudge": "#A45400",
+    "colorId": "4",
+    "google": "Flamingo",
+    "googleHex": "#E67C73",
+    "dE": 0.121
+  }
+}
