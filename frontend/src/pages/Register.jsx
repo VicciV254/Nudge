@@ -13,6 +13,7 @@ export default function Register() {
   const [form, setForm] = useState({ displayName: '', email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -72,9 +73,21 @@ export default function Register() {
 
           <div className="field" style={{ marginTop: 'var(--space-4)' }}>
             <label className="field__label" htmlFor="rpw">Password</label>
-            <input id="rpw" className="input" type="password" value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              aria-invalid={Boolean(errors.password)} autoComplete="new-password" />
+            <div className="input-group">
+              <input id="rpw" className="input" type={showPassword ? 'text' : 'password'} value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                aria-invalid={Boolean(errors.password)} autoComplete="new-password" />
+              <button
+                type="button"
+                className="input-group__btn"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
+                tabIndex={-1}
+              >
+                <Icon name={showPassword ? 'eyeOff' : 'eye'} size={17} strokeWidth={1.6} />
+              </button>
+            </div>
             {errors.password
               ? <span className="field__error">{errors.password}</span>
               : <span className="field__hint">At least 8 characters, mixed case, one number.</span>}

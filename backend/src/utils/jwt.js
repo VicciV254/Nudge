@@ -25,5 +25,20 @@ export const verifyAccess = (token) => jwt.verify(token, secret('JWT_SECRET'));
  */
 export const newRefreshToken = () => crypto.randomBytes(48).toString('base64url');
 
+/**
+ * Short-lived signed state for OAuth redirects (CSRF protection + carrying
+ * flow data across the redirect to Google and back). Distinct `typ` claim so
+ * a state token can never be mistaken for — or accepted as — a real access
+ * token by requireAuth, even though both are signed with the same secret.
+ */
+export const signState = (payload) =>
+  jwt.sign({ ...payload, typ: 'oauth_state' }, secret('JWT_SECRET'), { expiresIn: '10m' });
+
+export const verifyState = (token) => {
+  const payload = jwt.verify(token, secret('JWT_SECRET'));
+  if (payload.typ !== 'oauth_state') throw new Error('Not a state token');
+  return payload;
+};
+
 export const refreshExpiry = () =>
   new Date(Date.now() + REFRESH_TTL_DAYS * 24 * 60 * 60 * 1000);

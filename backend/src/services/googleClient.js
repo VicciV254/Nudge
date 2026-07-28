@@ -51,22 +51,44 @@ export const isConfigured = () =>
   Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REDIRECT_URI);
 
 /** Build the consent URL. `state` is a signed nonce — see calendarController. */
-export function buildAuthUrl(state) {
+export function buildAuthUrl(state, { scopes = SCOPES, accessType = 'offline', prompt = 'consent' } = {}) {
   const { id, redirect } = cfg();
   const p = new URLSearchParams({
     client_id: id,
     redirect_uri: redirect,
     response_type: 'code',
-    scope: SCOPES.join(' '),
+    scope: scopes.join(' '),
     // offline + consent is what actually returns a refresh_token. Without
     // prompt=consent Google omits it on every authorisation after the first,
     // and the integration silently dies when the access token expires.
-    access_type: 'offline',
-    prompt: 'consent',
+    access_type: accessType,
+    prompt,
     include_granted_scopes: 'true',
     state,
   });
   return `${OAUTH_AUTH}?${p}`;
+}
+
+/**
+ * "Sign in with Google" needs only identity, not calendar access — a much
+ * smaller consent screen than the calendar-connect flow above. No refresh
+ * token is needed either, since we don't call the Google API again after
+ * login; `select_account` (instead of `consent`) skips the full permissions
+ * screen on repeat sign-ins.
+ */
+export const LOGIN_SCOPES = ['openid', 'email', 'profile'];
+
+export function buildLoginAuthUrl(state) {
+  return buildAuthUrl(state, { scopes: LOGIN_SCOPES, accessType: 'online', prompt: 'select_account' });
+}
+
+/** Fetch the signed-in Google user's profile using an access token from exchangeCode(). */
+export async function getUserInfo(accessToken) {
+  const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!res.ok) throw new GoogleApiError('Failed to fetch Google profile', res.status);
+  return res.json();
 }
 
 async function tokenRequest(params) {

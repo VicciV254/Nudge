@@ -1,6 +1,10 @@
 import bcrypt from 'bcryptjs';
+import crypto from 'node:crypto';
 import prisma from '../config/db.js';
-import { signAccess, newRefreshToken, refreshExpiry } from '../utils/jwt.js';
+import { signAccess, newRefreshToken, refreshExpiry, signState, verifyState } from '../utils/jwt.js';
+import * as g from '../services/googleClient.js';
+
+const APP_URL = process.env.APP_URL || 'http://localhost:3000';
 
 const PUBLIC_USER = {
   id: true,
@@ -97,4 +101,81 @@ export async function logout(req, res) {
 export async function me(req, res) {
   const user = await prisma.user.findUnique({ where: { id: req.user.id }, select: PUBLIC_USER });
   res.json(user);
+}
+
+/** GET /api/auth/google -> redirects the browser straight to Google's consent screen. */
+export function googleStart(req, res) {
+  if (!g.isConfigured()) {
+    // JSON here would just show as a broken redirect to the user; send them
+    // somewhere they can read the message instead.
+    return res.redirect(`${APP_URL}/login?google=unavailable`);
+  }
+  const state = signState({ purpose: 'login', nonce: crypto.randomBytes(8).toString('hex') });
+  res.redirect(g.buildLoginAuthUrl(state));
+}
+
+/**
+ * GET /api/auth/google/callback (login branch — see authRoutes.js for the
+ * dispatch between this and the calendar-connect callback, which shares the
+ * same redirect_uri registered with Google).
+ *
+ * Finds an existing user by googleId or email, links the Google account if
+ * it was previously email/password-only, or creates a new account. Then
+ * issues a normal session and hands the tokens to the frontend via redirect
+ * query params, since this leg is a full-page navigation (no XHR to read a
+ * JSON body from).
+ */
+export async function googleLoginCallback(req, res) {
+  const { code, state, error } = req.query;
+  const fail = (reason) => res.redirect(`${APP_URL}/login?google=${reason}`);
+
+  if (error) return fail('denied');
+  if (!code || !state) return fail('invalid');
+
+  try {
+    verifyState(state);
+  } catch {
+    return fail('expired');
+  }
+
+  try {
+    const tokenRes = await g.exchangeCode(code);
+    const profile = await g.getUserInfo(tokenRes.access_token);
+    if (!profile.email) return fail('no_email');
+
+    let user = await prisma.user.findFirst({
+      where: { OR: [{ googleId: profile.sub }, { email: profile.email.toLowerCase() }] },
+    });
+
+    if (user) {
+      if (!user.googleId) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { googleId: profile.sub, avatarUrl: user.avatarUrl || profile.picture || null },
+        });
+      }
+    } else {
+      user = await prisma.user.create({
+        data: {
+          email: profile.email.toLowerCase(),
+          googleId: profile.sub,
+          displayName: profile.name || profile.email.split('@')[0],
+          avatarUrl: profile.picture || null,
+          timezone: 'UTC',
+        },
+      });
+    }
+
+    await prisma.user.update({ where: { id: user.id }, data: { lastActiveAt: new Date() } });
+
+    const publicUser = await prisma.user.findUnique({ where: { id: user.id }, select: PUBLIC_USER });
+    const { accessToken, refreshToken } = await issueSession(publicUser, req);
+
+    return res.redirect(
+      `${APP_URL}/auth/callback?accessToken=${encodeURIComponent(accessToken)}&refreshToken=${encodeURIComponent(refreshToken)}`
+    );
+  } catch (err) {
+    console.error('[auth] google sign-in failed:', err.message);
+    return fail('failed');
+  }
 }

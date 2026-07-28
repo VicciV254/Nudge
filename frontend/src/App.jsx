@@ -9,6 +9,7 @@ import Landing from './pages/Landing.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Today from './pages/Today.jsx';
+import GoogleAuthCallback from './pages/GoogleAuthCallback.jsx';
 
 // Heavier, less-visited routes are split out of the initial bundle.
 const Tasks = lazy(() => import('./pages/Tasks.jsx'));
@@ -51,6 +52,7 @@ export default function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<PublicOnly><Login /></PublicOnly>} />
       <Route path="/register" element={<PublicOnly><Register /></PublicOnly>} />
+      <Route path="/auth/callback" element={<GoogleAuthCallback />} />
 
       <Route path="/app" element={<Protected><Today /></Protected>} />
       <Route path="/app/tasks" element={<Protected><Tasks /></Protected>} />
