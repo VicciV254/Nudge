@@ -1,6 +1,7 @@
 import { memo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Icon from '../common/Icon.jsx';
+import TaskDetail from './TaskDetail.jsx';
 import { useTasks } from '../../context/TaskContext.jsx';
 import { formatDue, dueTone } from '../../utils/dates.js';
 import { describeRecurrence } from '../../utils/recurrence.js';
@@ -20,6 +21,7 @@ function TaskItem({ task }) {
   const { toggleTask, removeTask } = useTasks();
   const [busy, setBusy] = useState(false);
   const [confirmScope, setConfirmScope] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const isRecurring = Boolean(task.seriesId);
 
@@ -63,7 +65,12 @@ function TaskItem({ task }) {
         {task.completed && <Icon name="check" size={12} strokeWidth={3.4} />}
       </button>
 
-      <div className="task__body">
+      <button
+        type="button"
+        className="task__body task__body--clickable"
+        onClick={() => setDetailOpen(true)}
+        aria-label={`View details for "${task.title}"`}
+      >
         <div className="task__title">{task.title}</div>
 
         <div className="task__meta">
@@ -87,29 +94,29 @@ function TaskItem({ task }) {
             </span>
           )}
         </div>
+      </button>
 
-        {confirmScope && (
-          <div className="scopeask" role="group" aria-label="Delete which occurrences?">
-            <span className="scopeask__q">Delete…</span>
-            <button type="button" className="btn btn--sm" onClick={() => doDelete('this')}>
-              Just this one
-            </button>
-            <button type="button" className="btn btn--ghost btn--sm" onClick={() => doDelete('future')}>
-              This and future
-            </button>
-            <button type="button" className="btn btn--ghost btn--sm" onClick={() => doDelete('all')}>
-              All
-            </button>
-            <button
-              type="button"
-              className="btn btn--ghost btn--sm"
-              onClick={() => setConfirmScope(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        )}
-      </div>
+      {confirmScope && (
+        <div className="scopeask" role="group" aria-label="Delete which occurrences?">
+          <span className="scopeask__q">Delete…</span>
+          <button type="button" className="btn btn--sm" onClick={() => doDelete('this')}>
+            Just this one
+          </button>
+          <button type="button" className="btn btn--ghost btn--sm" onClick={() => doDelete('future')}>
+            This and future
+          </button>
+          <button type="button" className="btn btn--ghost btn--sm" onClick={() => doDelete('all')}>
+            All
+          </button>
+          <button
+            type="button"
+            className="btn btn--ghost btn--sm"
+            onClick={() => setConfirmScope(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
 
       {task.priority && task.priority !== 'normal' && (
         <span className={`chip chip--${task.priority} task__prio`}>
@@ -127,6 +134,8 @@ function TaskItem({ task }) {
           <Icon name="trash" size={15} />
         </button>
       </div>
+
+      <TaskDetail task={task} isOpen={detailOpen} onClose={() => setDetailOpen(false)} />
     </motion.li>
   );
 }
