@@ -17,6 +17,7 @@ const PRIORITY_LABEL = { urgent: 'Urgent', high: 'High', normal: 'Normal', low: 
  */
 export default function TaskDetail({ task, isOpen, onClose }) {
   const { editTask } = useTasks();
+  const [portalElement, setPortalElement] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
@@ -51,6 +52,28 @@ export default function TaskDetail({ task, isOpen, onClose }) {
   useEffect(() => {
     if (isEditing) titleRef.current?.focus();
   }, [isEditing]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    let container = document.getElementById('nudge-modal-root');
+    let created = false;
+
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'nudge-modal-root';
+      document.body.appendChild(container);
+      created = true;
+    }
+
+    setPortalElement(container);
+
+    return () => {
+      if (created && container.parentNode) {
+        container.parentNode.removeChild(container);
+      }
+    };
+  }, []);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -112,7 +135,6 @@ export default function TaskDetail({ task, isOpen, onClose }) {
 
   const tone = dueTone(task.dueDate, task.completed);
   const isRecurring = Boolean(task.seriesId);
-  const portalElement = typeof document !== 'undefined' ? document.body : null;
 
   if (!isOpen || !portalElement) return null;
 
