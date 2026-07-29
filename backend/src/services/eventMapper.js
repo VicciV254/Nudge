@@ -107,6 +107,7 @@ export function hashOfEvent(ev) {
 export function eventToTaskPatch(ev) {
   const patch = {};
   if (typeof ev.summary === 'string' && ev.summary.trim()) patch.title = ev.summary.trim().slice(0, 200);
+  if (typeof ev.description === 'string') patch.description = ev.description;
 
   const start = ev.start?.dateTime || ev.start?.date;
   if (start) patch.dueDate = new Date(start);

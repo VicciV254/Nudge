@@ -208,24 +208,52 @@ export async function pullChanges(userId, { forceFull = false } = {}) {
  * can report meaningful counts.
  */
 async function applyRemoteEvent(userId, ev) {
-  // We only care about events we created. A user's unrelated meetings are not
-  // tasks, and inventing tasks from them would be wildly presumptuous.
-  if (!isNudgeEvent(ev)) return 'ignored';
+  const fromNudge = isNudgeEvent(ev);
+  const taskId = fromNudge ? taskIdOf(ev) : null;
 
-  const taskId = taskIdOf(ev);
-  if (!taskId) return 'ignored';
-
-  const task = await prisma.task.findFirst({ where: { id: taskId, userId } });
-  if (!task) return 'ignored';
+  // Prefer explicit taskId for Nudge-owned events, otherwise match by Google
+  // event id so manually-created Google events can be mirrored into tasks.
+  let task = null;
+  if (taskId) {
+    task = await prisma.task.findFirst({ where: { id: taskId, userId } });
+  }
+  if (!task && ev.id) {
+    task = await prisma.task.findFirst({ where: { userId, calendarEventId: ev.id } });
+  }
 
   // Deleted / cancelled in Google.
   if (ev.status === 'cancelled') {
+    if (!task) return 'ignored';
     await prisma.task.update({
       where: { id: task.id },
       data: { calendarEventId: null, calendarSync: false, syncStatus: 'off', syncHash: null, syncedAt: new Date() },
     });
     return 'deleted';
   }
+
+  // If this is a Google-side event we have never seen before, mirror it into
+  // the task list so pull sync is genuinely two-way.
+  if (!task && !fromNudge) {
+    const patch = eventToTaskPatch(ev);
+    if (!patch.title || !patch.dueDate) return 'ignored';
+
+    await prisma.task.create({
+      data: {
+        userId,
+        title: patch.title,
+        description: patch.description || null,
+        dueDate: patch.dueDate,
+        calendarSync: true,
+        calendarEventId: ev.id,
+        syncStatus: 'synced',
+        syncHash: hashOfEvent(ev),
+        syncedAt: new Date(),
+      },
+    });
+    return 'updated';
+  }
+
+  if (!task) return 'ignored';
 
   // Loop guard: if the event still hashes to what we last wrote, this
   // notification is the echo of our own push.

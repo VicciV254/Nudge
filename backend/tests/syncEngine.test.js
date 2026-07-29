@@ -28,8 +28,52 @@ const prismaDouble = {
     },
   },
   task: {
-    findFirst: async ({ where }) => db.tasks.get(where.id) ?? null,
+    findFirst: async ({ where }) => {
+      if (where?.id) {
+        const byId = db.tasks.get(where.id) ?? null;
+        if (!byId || (where.userId && byId.userId !== where.userId)) return null;
+        return byId;
+      }
+      if (where?.calendarEventId) {
+        for (const t of db.tasks.values()) {
+          if (t.calendarEventId === where.calendarEventId && (!where.userId || t.userId === where.userId)) {
+            return t;
+          }
+        }
+      }
+      return null;
+    },
     findMany: async () => [...db.tasks.values()],
+    create: async ({ data }) => {
+      const id = data.id || `task_${db.tasks.size + 1}`;
+      const row = {
+        id,
+        title: data.title,
+        description: data.description ?? null,
+        completed: data.completed ?? false,
+        priority: data.priority ?? 'normal',
+        category: data.category ?? null,
+        tags: data.tags ?? [],
+        dueDate: data.dueDate ?? null,
+        completedAt: data.completedAt ?? null,
+        calendarSync: data.calendarSync ?? false,
+        calendarEventId: data.calendarEventId ?? null,
+        syncStatus: data.syncStatus ?? 'off',
+        syncedAt: data.syncedAt ?? null,
+        syncHash: data.syncHash ?? null,
+        revision: data.revision ?? 1,
+        conflictData: data.conflictData ?? null,
+        recurrence: data.recurrence ?? null,
+        recurrenceStart: data.recurrenceStart ?? null,
+        recurrenceEnded: data.recurrenceEnded ?? false,
+        seriesId: data.seriesId ?? null,
+        userId: data.userId,
+        createdAt: data.createdAt ?? new Date(),
+        updatedAt: data.updatedAt ?? new Date(),
+      };
+      db.tasks.set(id, row);
+      return row;
+    },
     update: async ({ where, data }) => {
       const t = db.tasks.get(where.id);
       for (const [k, v] of Object.entries(data)) t[k] = v;
@@ -236,12 +280,32 @@ describe('pullChanges', () => {
     assert.equal(t.syncStatus, 'off');
   });
 
-  test("ignores events this app did not create", async () => {
+  test('imports a Google-side event as a task when first seen', async () => {
     listPages = [
-      { items: [{ id: 'meeting_1', status: 'confirmed', summary: "Someone else's meeting" }], nextSyncToken: 't' },
+      {
+        items: [
+          {
+            id: 'meeting_1',
+            status: 'confirmed',
+            summary: 'Team planning',
+            description: 'Weekly planning call',
+            start: { dateTime: '2026-08-20T09:30:00Z' },
+            end: { dateTime: '2026-08-20T10:00:00Z' },
+          },
+        ],
+        nextSyncToken: 't',
+      },
     ];
+
     const stats = await sync.pullChanges('u1');
-    assert.equal(stats.ignored, 1);
+    assert.equal(stats.updated, 1);
+
+    const imported = [...db.tasks.values()].find((t) => t.calendarEventId === 'meeting_1');
+    assert.ok(imported, 'remote Google event should be mirrored into local tasks');
+    assert.equal(imported.title, 'Team planning');
+    assert.equal(imported.description, 'Weekly planning call');
+    assert.equal(imported.syncStatus, 'synced');
+    assert.equal(imported.calendarSync, true);
   });
 
   test('follows pagination and only stores the token from the FINAL page', async () => {
