@@ -2,6 +2,7 @@ import { createContext, useContext, useReducer, useCallback, useMemo, useEffect 
 import * as taskApi from '../api/tasks.js';
 import { useAuth } from './AuthContext.jsx';
 import { useToast } from './ToastContext.jsx';
+import { usePwaTaskReminders } from '../hooks/usePwaTaskReminders.js';
 
 /**
  * Task state.
@@ -76,6 +77,8 @@ export function TaskProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initial);
   const { isAuthed } = useAuth();
   const toast = useToast();
+
+  usePwaTaskReminders(state.tasks);
 
   const fetchTasks = useCallback(async () => {
     dispatch({ type: 'LOADING' });

@@ -3,11 +3,22 @@ import Icon from '../components/common/Icon.jsx';
 import CalendarIntegration from '../components/calendar/CalendarIntegration.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import {
+  getReminderSettings,
+  setReminderSettings,
+  REMINDER_LEAD_OPTIONS,
+} from '../hooks/usePwaTaskReminders.js';
 
 export default function Settings() {
   const { mode, isExplicit, toggle, useSystem } = useTheme();
   const { user } = useAuth();
   const [name, setName] = useState(user?.displayName || '');
+  const [reminders, setReminders] = useState(() => getReminderSettings());
+
+  const updateReminderSetting = (next) => {
+    setReminders(next);
+    setReminderSettings(next);
+  };
 
   return (
     <div className="page page--narrow">
@@ -61,6 +72,42 @@ export default function Settings() {
               Ember is the only theme shipped today. Both modes are contrast-audited to WCAG AA.
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="card panel">
+        <div className="panel__head"><Icon name="bell" size={17} /><b>Reminders</b></div>
+        <div className="panel__body">
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={reminders.enabled}
+              onChange={(e) => updateReminderSetting({ ...reminders, enabled: e.target.checked })}
+            />
+            <span className="toggle__track" aria-hidden="true"><span className="toggle__dot" /></span>
+            <span className="toggle__label">Enable reminder notifications</span>
+          </label>
+
+          <div className="field" style={{ marginTop: 'var(--space-4)' }}>
+            <span className="field__label">Reminder lead time</span>
+            <div className="segs">
+              {REMINDER_LEAD_OPTIONS.map((minutes) => (
+                <button
+                  key={minutes}
+                  type="button"
+                  className={`seg ${reminders.leadMinutes === minutes ? 'seg--on' : ''}`}
+                  onClick={() => updateReminderSetting({ ...reminders, leadMinutes: minutes })}
+                  disabled={!reminders.enabled}
+                >
+                  {minutes}m
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <p className="field__hint" style={{ marginTop: 'var(--space-2)' }}>
+            Reminders run in the installed app and alert you before due time.
+          </p>
         </div>
       </section>
 
