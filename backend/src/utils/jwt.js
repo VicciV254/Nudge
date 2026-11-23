@@ -25,12 +25,8 @@ export const verifyAccess = (token) => jwt.verify(token, secret('JWT_SECRET'));
  */
 export const newRefreshToken = () => crypto.randomBytes(48).toString('base64url');
 
-/**
- * Short-lived signed state for OAuth redirects (CSRF protection + carrying
- * flow data across the redirect to Google and back). Distinct `typ` claim so
- * a state token can never be mistaken for — or accepted as — a real access
- * token by requireAuth, even though both are signed with the same secret.
- */
+// Short-lived OAuth state (CSRF guard, carries flow data). verifyState rejects any token without
+// typ 'oauth_state', such as an access token signed with the same secret.
 export const signState = (payload) =>
   jwt.sign({ ...payload, typ: 'oauth_state' }, secret('JWT_SECRET'), { expiresIn: '10m' });
 

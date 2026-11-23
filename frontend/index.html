@@ -11,12 +11,8 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png" />
     <link rel="apple-touch-icon" href="/icons/icon-180.png" />
 
-    <!--
-      Matches --bg-canvas so the browser chrome doesn't flash. A single tag with
-      NO media attribute: the media-scoped variants follow the OS, which would
-      contradict an explicit in-app theme choice. ThemeContext keeps this in
-      step with the actual token value.
-    -->
+    <!-- Matches --bg-canvas (ThemeContext keeps it in step). No media attribute: media-scoped
+         variants follow the OS and would contradict an in-app theme choice. -->
     <meta name="theme-color" content="#FEFBF8" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />

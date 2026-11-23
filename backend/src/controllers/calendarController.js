@@ -220,13 +220,8 @@ export async function resolveConflict(req, res) {
   res.json({ resolved: true, kept: keep });
 }
 
-/**
- * POST /api/calendar/webhook  — Google's push notification.
- *
- * Google sends headers only, never a payload, so this is purely a trigger to
- * run an incremental pull. It must return fast: Google retries on timeout and
- * a slow handler turns into duplicate syncs.
- */
+// POST /api/calendar/webhook: a header-only trigger from Google for an incremental pull. Reply at
+// once: Google retries on timeout, and a slow reply would mean duplicate syncs.
 export async function webhook(req, res) {
   const channelId = req.get('X-Goog-Channel-ID');
   const token = req.get('X-Goog-Channel-Token');

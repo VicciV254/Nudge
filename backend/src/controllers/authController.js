@@ -79,8 +79,8 @@ export async function refresh(req, res) {
     return res.status(401).json({ error: 'Session expired, please sign in again' });
   }
 
-  // Rotate: a refresh token is single-use, so a stolen one is only useful until
-  // the real client next refreshes (at which point both are invalidated).
+  // Rotate: each refresh token is single-use, so a copied one stops working once either holder
+  // refreshes with it.
   const rotated = newRefreshToken();
   await prisma.session.update({
     where: { id: session.id },
@@ -114,17 +114,8 @@ export function googleStart(req, res) {
   res.redirect(g.buildLoginAuthUrl(state));
 }
 
-/**
- * GET /api/auth/google/callback (login branch — see authRoutes.js for the
- * dispatch between this and the calendar-connect callback, which shares the
- * same redirect_uri registered with Google).
- *
- * Finds an existing user by googleId or email, links the Google account if
- * it was previously email/password-only, or creates a new account. Then
- * issues a normal session and hands the tokens to the frontend via redirect
- * query params, since this leg is a full-page navigation (no XHR to read a
- * JSON body from).
- */
+// GET /api/auth/google/callback, login leg; authRoutes.js dispatches the shared redirect URI.
+// A full-page navigation has no XHR to read JSON from, so tokens go back as query params.
 export async function googleLoginCallback(req, res) {
   const { code, state, error } = req.query;
   const fail = (reason) => res.redirect(`${APP_URL}/login?google=${reason}`);

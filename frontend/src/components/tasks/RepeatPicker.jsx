@@ -1,15 +1,8 @@
 import Icon from '../common/Icon.jsx';
 import { PRESETS, describeRecurrence } from '../../utils/recurrence.js';
 
-/**
- * Repeat selector.
- *
- * Presets only, by design. A full RRULE builder ("every 3rd Tuesday except
- * December") is a large amount of UI for a case that is vanishingly rare in a
- * to-do app — and the six presets below cover what people actually create.
- * The backend accepts arbitrary RRULEs, so a custom rule arriving from Google
- * still round-trips; it just renders as a read-only description here.
- */
+// Presets only: a full RRULE builder is a lot of UI for rare rules. A custom rule from Google still
+// round-trips and shows here as a read-only description.
 export default function RepeatPicker({ value, onChange, dueDate, disabled }) {
   const isCustom = value && !PRESETS.some((p) => p.rrule === value);
 

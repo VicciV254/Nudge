@@ -1,13 +1,5 @@
-/**
- * Nudge brand marks — "n in motion".
- *
- * The two trailing lines are the whole idea: they turn a neutral lowercase `n`
- * into a letter being *nudged* forward. Keep them. They are also the motion
- * language for the rest of the app (rows slide 6px and settle).
- *
- * Geometry is fixed on a 512 grid; scale via the `size` prop, never by editing
- * the paths.
- */
+// The two trailing lines turn the `n` into a letter being nudged forward; keep them. Paths sit on a
+// fixed 512 grid: scale with the `size` prop, never by editing them.
 
 const STROKE = 68;
 

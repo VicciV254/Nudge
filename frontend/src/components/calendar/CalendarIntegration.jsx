@@ -4,12 +4,8 @@ import Icon from '../common/Icon.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
 import * as cal from '../../api/calendar.js';
 
-/**
- * Google Calendar connection panel — wired to the real API.
- *
- * The consent moment is where users decide whether to trust the integration,
- * so scopes are named in plain language next to the technical scope string.
- */
+// Users decide here whether to trust the integration, so each scope appears in plain language next
+// to its technical name.
 
 // Messages the OAuth callback can redirect back with.
 const CALLBACK_MESSAGES = {

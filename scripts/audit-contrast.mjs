@@ -1,21 +1,6 @@
 #!/usr/bin/env node
-/**
- * Accessibility gate.
- *
- * Walks every rendered element on every route, in light AND dark mode, resolves
- * each one's *computed* colour against its true painted background (climbing the
- * tree past transparent ancestors), and checks the WCAG AA ratio — applying the
- * large-text exemption correctly.
- *
- * This catches what a token-level audit cannot: a colour that passes on the
- * canvas but fails on a tinted card it actually lands on.
- *
- * Usage:
- *   cd frontend && npm run build && npx vite preview --port 4173 &
- *   node scripts/audit-contrast.mjs [baseUrl]
- *
- * Exits non-zero if anything fails, so it can gate CI.
- */
+// WCAG AA check of computed text colour against the painted background, light and dark, so it catches
+// text that passes on the canvas but fails on a tinted card. To run it, see README.md#verification.
 import { chromium } from 'playwright';
 
 const BASE = process.argv[2] || 'http://127.0.0.1:4173';

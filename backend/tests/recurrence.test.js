@@ -1,9 +1,3 @@
-/**
- * Recurrence service tests against an in-memory Prisma double.
- *
- * Focus: series advance, the reschedule-drift trap, double-advance guards,
- * and scoped edit/delete.
- */
 import { test, describe, beforeEach, mock } from 'node:test';
 import assert from 'node:assert/strict';
 

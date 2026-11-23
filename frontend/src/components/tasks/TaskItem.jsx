@@ -8,15 +8,8 @@ import { describeRecurrence } from '../../utils/recurrence.js';
 
 const PRIORITY_LABEL = { urgent: 'Urgent', high: 'High', normal: 'Normal', low: 'Low' };
 
-/**
- * A single task row.
- *
- * Tone rules from the brand system, made concrete:
- *  - Completing never makes a row vanish. It desaturates and strikes through,
- *    so the user sees the thing they just finished.
- *  - Overdue tints the *metadata*, never the whole row. A calendar full of red
- *    is the fastest way to make a productivity app feel like a punishment.
- */
+// A completed row fades and strikes through instead of vanishing, so the user sees what they just
+// finished; overdue tints only the metadata, since a wall of red feels like punishment.
 function TaskItem({ task }) {
   const { toggleTask, removeTask } = useTasks();
   const [busy, setBusy] = useState(false);

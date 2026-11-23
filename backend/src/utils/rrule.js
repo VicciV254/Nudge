@@ -1,17 +1,5 @@
-/**
- * A focused RFC 5545 RRULE implementation.
- *
- * Why not the `rrule` npm package: it is ~50KB, its timezone story relies on a
- * bundled tz database that drifts from the platform's, and we only need four
- * frequencies. This handles exactly what a to-do app generates, and it does the
- * one thing generic libraries usually get wrong for our case — *wall-clock*
- * recurrence across DST.
- *
- * The DST rule that matters: "every weekday at 09:00" must stay 09:00 local
- * after the clocks change. Naive UTC arithmetic (add 24h) silently shifts it to
- * 08:00 or 10:00 for half the year. So all stepping happens on calendar fields
- * in the user's zone, and only the final instant is converted back to UTC.
- */
+// RFC 5545 RRULE subset, used instead of the rrule package, whose bundled tz database drifts from
+// the platform's. Steps run on wall-clock fields in the user's zone, so 09:00 stays 09:00 across DST.
 
 export const WEEKDAYS = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
 const FREQS = new Set(['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY']);
@@ -54,13 +42,8 @@ function offsetMinutes(date, timeZone) {
   return (asUTC - Math.floor(date.getTime() / 1000) * 1000) / 60000;
 }
 
-/**
- * Convert wall-clock fields in `timeZone` to a UTC instant.
- *
- * Two passes: guess using the offset at the naive instant, then correct using
- * the offset actually in force at that guess. This resolves the case where the
- * target time sits on the far side of a DST transition from the guess.
- */
+// Two passes: guess with the offset at the naive instant, then correct with the offset in force at
+// that guess, for targets on the far side of a DST transition from it.
 export function zonedTimeToUtc({ year, month, day, hour = 0, minute = 0, second = 0 }, timeZone) {
   const naive = Date.UTC(year, month - 1, day, hour, minute, second);
   let ts = naive - offsetMinutes(new Date(naive), timeZone) * 60000;
@@ -185,13 +168,8 @@ export const toUntilString = (d) => {
 
 // ---------------------------------------------------------------- iterate
 
-/**
- * The next occurrence strictly after `after`.
- *
- * `dtStart` anchors the series: its wall-clock time of day is preserved, and
- * for WEEKLY rules without BYDAY its weekday is implied.
- * Returns null when the series has ended (COUNT exhausted or past UNTIL).
- */
+// Next occurrence strictly after `after`, or null once COUNT or UNTIL ends the series. dtStart fixes
+// the time of day and, for WEEKLY without BYDAY, the weekday.
 export function nextOccurrence(rule, dtStart, after, timeZone = 'UTC') {
   if (!rule?.freq) return null;
 

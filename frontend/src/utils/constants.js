@@ -15,15 +15,7 @@ export const FILTERS = [
   { value: 'completed', label: 'Done',      icon: 'check' },
 ];
 
-/**
- * Google Calendar's events.colorId is a fixed 11-slot palette — you cannot send
- * arbitrary hex. These slots were chosen for mutual separation (all >= dE 0.13
- * apart in OKLab) so priorities stay distinguishable inside Google's own UI.
- *
- * Note "5" (Banana) for high rather than "6" (Tangerine): Tangerine is a
- * red-orange only dE 0.07 from urgent's Tomato, effectively identical in a
- * month view. And completed is "10" (Basil, green) — "3" is Grape, i.e. purple.
- */
+// Mirrors COLOR_ID in backend/src/services/eventMapper.js, which explains the slot choices.
 export const GCAL_COLOR_ID = {
   urgent: '11', // Tomato
   high: '5',    // Banana

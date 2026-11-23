@@ -1,9 +1,3 @@
-/**
- * RRULE engine tests.
- *
- * Heavy on the cases that break naive implementations: DST boundaries,
- * month-end clamping, leap years, and COUNT/UNTIL termination.
- */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 

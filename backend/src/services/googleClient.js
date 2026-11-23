@@ -1,10 +1,5 @@
-/**
- * Minimal Google OAuth2 + Calendar client.
- *
- * No `googleapis` dependency: that package is ~50MB and pulls in a discovery
- * layer we don't need. This is plain fetch against four documented endpoints,
- * which also makes every request trivially testable by swapping global.fetch.
- */
+// Plain fetch instead of the googleapis package, which is large and brings a discovery layer this
+// doesn't need; tests stub global.fetch.
 import prisma from '../config/db.js';
 import { encrypt, decrypt } from '../utils/crypto.js';
 
@@ -69,13 +64,8 @@ export function buildAuthUrl(state, { scopes = SCOPES, accessType = 'offline', p
   return `${OAUTH_AUTH}?${p}`;
 }
 
-/**
- * "Sign in with Google" needs only identity, not calendar access — a much
- * smaller consent screen than the calendar-connect flow above. No refresh
- * token is needed either, since we don't call the Google API again after
- * login; `select_account` (instead of `consent`) skips the full permissions
- * screen on repeat sign-ins.
- */
+// Sign-in needs identity only: no calendar scopes, and online access (no refresh token) since login
+// never calls Google again. select_account skips the full consent screen on repeat sign-ins.
 export const LOGIN_SCOPES = ['openid', 'email', 'profile'];
 
 export function buildLoginAuthUrl(state) {

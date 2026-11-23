@@ -1,10 +1,4 @@
-/**
- * Tiny fetch wrapper. No axios — fetch plus ~60 lines does everything this app
- * needs, and it keeps the bundle smaller.
- *
- * Handles: base URL, JSON, bearer token, one silent refresh on 401, and errors
- * that carry a usable `message` instead of "Failed to fetch".
- */
+// Plain fetch rather than axios, to keep the bundle small.
 
 const BASE = import.meta.env?.VITE_API_URL || '/api';
 
