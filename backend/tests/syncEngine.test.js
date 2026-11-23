@@ -1,10 +1,4 @@
-/**
- * calendarSync engine tests against an in-memory Prisma double and a stubbed
- * Google API.
- *
- * This is where the real risk lives: an infinite webhook loop, a lost
- * nextSyncToken, or a silently discarded user edit. All three are covered here.
- */
+// calendarSync against an in-memory Prisma double and a stubbed Google client: no database or network.
 import { test, describe, beforeEach, mock } from 'node:test';
 import assert from 'node:assert/strict';
 

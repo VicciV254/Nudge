@@ -11,8 +11,7 @@ import { notFound, errorHandler } from './middleware/errorHandler.js';
 export function createApp() {
   const app = express();
 
-  // Behind Vercel/Render/Railway: needed for req.ip and rate limiting to see
-  // the real client rather than the proxy.
+  // Trust one proxy hop so req.ip and the rate limiter see the client, not the hosting proxy.
   app.set('trust proxy', 1);
 
   app.use(helmet());

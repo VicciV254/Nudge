@@ -1,12 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-/**
- * One Prisma client per process.
- *
- * `globalThis` caching matters in dev: `node --watch` re-imports modules on
- * every save, and without this you leak a connection pool each time — which on
- * Neon's free tier will exhaust your connection limit within a few minutes.
- */
+// One Prisma client per process: cached on globalThis so re-evaluating this module doesn't open another pool.
 const globalForPrisma = globalThis;
 
 export const prisma =

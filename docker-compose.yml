@@ -1,5 +1,4 @@
-# Local Postgres, for working offline or without touching your Neon branch.
-# Point DIRECT_URL and DATABASE_URL at this, then `npm run db:migrate`.
+# Local PostgreSQL for development; README.md#set-up-the-backend shows how to point the API at it.
 services:
   db:
     image: postgres:16-alpine

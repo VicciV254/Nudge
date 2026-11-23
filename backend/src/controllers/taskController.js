@@ -3,13 +3,8 @@ import * as sync from '../services/calendarSync.js';
 import * as rec from '../services/recurrence.js';
 import { parseRRule } from '../utils/rrule.js';
 
-/**
- * Fire-and-forget push to Google.
- *
- * Deliberately not awaited: a slow or failing Calendar API must never make the
- * user's task write feel slow or fail. The task row already records
- * syncStatus='pending', so a later /calendar/sync will retry anything missed.
- */
+// Not awaited, so a slow or failing Calendar API never slows or fails the task write. The row is
+// already syncStatus 'pending', so /calendar/sync retries anything missed.
 function schedulePush(userId, taskId) {
   setImmediate(() => {
     sync.pushTask(userId, taskId).catch((err) => {

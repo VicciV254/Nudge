@@ -4,14 +4,8 @@ import { useAuth } from './AuthContext.jsx';
 import { useToast } from './ToastContext.jsx';
 import { usePwaTaskReminders } from '../hooks/usePwaTaskReminders.js';
 
-/**
- * Task state.
- *
- * Mutations are optimistic: the UI updates immediately and rolls back if the
- * request fails. For a to-do app this is the difference between feeling instant
- * and feeling laggy — and completing a task is the single most-repeated action,
- * so it must never wait on a round trip.
- */
+// Mutations are optimistic and roll back on failure: completing a task, the most repeated action,
+// must never wait on a round trip.
 
 const TaskContext = createContext(null);
 

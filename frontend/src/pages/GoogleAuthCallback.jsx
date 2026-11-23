@@ -5,12 +5,8 @@ import { tokens } from '../api/client.js';
 import { me } from '../api/auth.js';
 import { useAuth } from '../context/AuthContext.jsx';
 
-/**
- * Landing spot for the "Sign in with Google" redirect. The backend already
- * finished the OAuth exchange server-side and hands us finished session
- * tokens as query params — this page's only job is to store them, fetch the
- * user, and route into the app (or bounce back to /login with a reason).
- */
+// Google sign-in lands here with session tokens in the query string (the backend finished the
+// OAuth exchange): store them, load the user and route into the app.
 export default function GoogleAuthCallback() {
   const [params] = useSearchParams();
   const navigate = useNavigate();

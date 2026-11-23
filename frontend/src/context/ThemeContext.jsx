@@ -1,12 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
-/**
- * Light/dark mode.
- *
- * The initial value is already written to <html data-mode> by the inline script
- * in index.html (before first paint). We read it back from the DOM rather than
- * recomputing, so React never disagrees with what the user is already seeing.
- */
+// index.html's inline script sets <html data-mode> before first paint; read it back rather than
+// recompute, so React never disagrees with what is already on screen.
 
 const ThemeContext = createContext(null);
 const STORAGE_KEY = 'nudge-mode';

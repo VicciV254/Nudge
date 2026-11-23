@@ -5,13 +5,8 @@ import { useToast } from '../../context/ToastContext.jsx';
 import * as cal from '../../api/calendar.js';
 import { formatDue } from '../../utils/dates.js';
 
-/**
- * Sync conflict resolver.
- *
- * The engine applies last-write-wins so the data is never stuck, but it records
- * the losing value. This surfaces that record: show both sides, mark which is
- * newer, and let the human decide. Silent LWW is how people stop trusting sync.
- */
+// The sync engine settles conflicts last-write-wins but keeps both versions; this shows them, marks
+// the newer one and lets the user choose.
 export default function ConflictBanner() {
   const { tasks, fetchTasks } = useTasks();
   const toast = useToast();

@@ -1,12 +1,4 @@
-/**
- * Sync-engine tests.
- *
- * These cover the logic that is genuinely hard to get right and impossible to
- * eyeball: the loop guard, the 410 full-resync recovery, pagination to reach
- * nextSyncToken, conflict detection, and the colour bridge.
- *
- * global.fetch is stubbed, so no network and no Google credentials are needed.
- */
+// The Google client tests stub global.fetch, so this file needs no network or Google credentials.
 import { test, describe, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 

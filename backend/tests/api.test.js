@@ -1,12 +1,5 @@
-/**
- * Route-level tests against an in-memory Prisma stub.
- *
- * These exercise the real Express app, real middleware, real validation and
- * real JWT logic — only the database is swapped out. That is where the bugs
- * actually live, and it means the suite runs with no Postgres.
- *
- * Run: npm test
- */
+// Drives the real app over HTTP with no database: every case returns before a Prisma query, so a
+// test that needs data must mock ../src/config/db.js, as recurrence.test.js does.
 import { test, before, after, describe } from 'node:test';
 import assert from 'node:assert/strict';
 

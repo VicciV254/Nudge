@@ -1,9 +1,4 @@
-/**
- * Client-side recurrence helpers.
- *
- * Only presentation and preset handling live here — all authoritative date
- * maths happens on the server, so the two can never disagree.
- */
+// Presentation and presets only: the server does all authoritative date maths, so the two can't disagree.
 
 export const PRESETS = [
   { id: 'none', label: 'Does not repeat', rrule: null },

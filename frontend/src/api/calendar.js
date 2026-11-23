@@ -8,13 +8,8 @@ export const syncNow = () => api.post('/calendar/sync', {});
 export const pushTask = (id) => api.post(`/calendar/tasks/${id}/push`, {});
 export const resolveConflict = (id, keep) => api.post(`/calendar/tasks/${id}/resolve`, { keep });
 
-/**
- * Start the OAuth flow.
- *
- * The connect URL must be fetched with the bearer token (it embeds a signed
- * state tied to this user), then the browser is redirected. A plain <a href>
- * cannot carry the Authorization header, which is why this is two steps.
- */
+// Two steps because a plain <a href> can't send the bearer token the connect URL needs (its signed
+// state is tied to this user): fetch the URL, then redirect.
 export async function beginConnect() {
   const { url } = await api.get('/calendar/connect');
   window.location.assign(url);

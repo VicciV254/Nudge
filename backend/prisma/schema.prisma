@@ -1,11 +1,5 @@
-// Nudge — Prisma schema for Neon (serverless Postgres)
-//
-// Notes on choices that differ from a naive schema:
-//  * Enums instead of free-text status/priority. Postgres enforces them, and it
-//    stops "High"/"high"/"HIGH" drifting into the data.
-//  * directUrl — Prisma runs migrations over a direct connection while the app
-//    uses the pooled one. Without this, `migrate` fails against PgBouncer.
-//  * Compound indexes matched to the queries the app actually runs.
+// Enums rather than free text, so Postgres keeps "High"/"high" variants out of the data.
+// directUrl: the app uses the pooled URL, but `prisma migrate` fails through PgBouncer.
 
 generator client {
   provider = "prisma-client-js"
@@ -59,9 +53,7 @@ model User {
   calendarSyncDirection String @default("both") // both | push | pull
   defaultReminderMinutes Int   @default(30)
 
-  // Incremental sync cursor. Google only issues nextSyncToken on the FINAL
-  // page of a list, and rejects it alongside timeMin/timeMax/q (HTTP 400).
-  // A 410 means it went stale -> discard and run a full resync.
+  // Incremental sync cursor; pullChanges in src/services/calendarSync.js handles Google's rules for it.
   syncToken       String?
   lastSyncAt      DateTime?
 

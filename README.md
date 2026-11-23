@@ -70,7 +70,7 @@ npm run build:frontend                  # builds the frontend into frontend/dist
 npm run audit:contrast                  # WCAG AA contrast check of the main pages, light and dark
 ```
 
-The contrast check needs `npm ci` and `npx playwright install chromium` at the repository root, and the build served by `npm --prefix frontend run preview -- --port 4173` in another terminal. The frontend has a Vitest setup but no test files.
+The contrast check needs `npm ci` and `npx playwright install chromium` at the repository root, and the build served by `npm --prefix frontend run preview -- --port 4173` in another terminal. It checks `http://127.0.0.1:4173` unless you pass another base URL: `npm run audit:contrast -- BASE_URL`. The frontend has a Vitest setup but no test files.
 
 ## Tech stack
 

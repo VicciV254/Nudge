@@ -1,11 +1,7 @@
 import crypto from 'node:crypto';
 
-/**
- * AES-256-GCM for Google OAuth tokens at rest.
- *
- * GCM (not CBC) so the ciphertext is authenticated — a tampered token fails to
- * decrypt instead of silently producing garbage we would then send to Google.
- */
+// For Google OAuth tokens at rest. GCM, not CBC, so a tampered token fails to decrypt instead of
+// yielding garbage that would be sent to Google.
 const ALGO = 'aes-256-gcm';
 
 function key() {

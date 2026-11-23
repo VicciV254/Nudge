@@ -5,18 +5,8 @@
  */
 import { payloadHash } from '../utils/crypto.js';
 
-/**
- * Google's events.colorId is a fixed 11-slot palette; arbitrary hex is rejected.
- * These slots were solved for MUTUAL SEPARATION (all >= dE 0.13 in OKLab) rather
- * than nearest-match, because what matters is that a user scanning a month view
- * in Google can tell the priorities apart.
- *
- * Two corrections against the obvious mapping:
- *   "3" is Grape (PURPLE), not green — a very common bug that renders every
- *       completed task purple. Green is "10" (Basil).
- *   high uses "5" (Banana) not "6" (Tangerine): Tangerine is a red-orange only
- *       dE 0.07 from urgent's Tomato, indistinguishable at chip size.
- */
+// colorId takes only Google's 11 fixed slots; these stay distinct (all >= dE 0.13 apart in OKLab).
+// "6" Tangerine sits too close to urgent's Tomato, and "3" is Grape (purple), not green.
 export const COLOR_ID = {
   urgent: '11', // Tomato
   high: '5',    // Banana
@@ -29,13 +19,8 @@ export const DEFAULT_DURATION_MIN = 60;
 
 const iso = (d) => new Date(d).toISOString();
 
-/**
- * Build the Google event body for a task.
- *
- * Deliberately NO emoji prefix on `summary`: it breaks alphabetical sort in
- * Google's agenda view, renders as tofu on some Android builds, and duplicates
- * information colorId already carries.
- */
+// No emoji prefix on summary: it breaks sorting in Google's agenda view, renders as tofu on some
+// Android builds, and repeats what colorId already shows.
 export function taskToEvent(task, { timezone = 'UTC', reminderMinutes = 30, appUrl = '', recurrence = null } = {}) {
   const start = new Date(task.dueDate);
   const end = new Date(start.getTime() + DEFAULT_DURATION_MIN * 60_000);

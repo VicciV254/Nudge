@@ -1,20 +1,5 @@
-/**
- * Recurring tasks.
- *
- * Model: a "series" row holds the RRULE and never appears in the task list.
- * Each due occurrence is materialised as a normal task ("instance") pointing
- * back at the series. Completing an instance materialises the next one.
- *
- * Why materialise instead of computing occurrences on read:
- *   - An instance is a real row, so it can be rescheduled, given notes, or
- *     synced to Google independently — none of which works on a virtual date.
- *   - Completion history stays truthful: you can see you did it 9 weeks running.
- *   - The task list query stays a plain indexed read with no expansion step.
- *
- * The cost is a sweep to keep instances materialised, which is what
- * `materialiseDue` does. Only ONE unfinished instance exists per series at a
- * time, so an unused series can't flood the list with a year of rows.
- */
+// A series row holds the RRULE and stays out of the list; each occurrence is a real task row, so it
+// can be rescheduled or synced on its own. One open instance per series keeps the list from flooding.
 import prisma from '../config/db.js';
 import { parseRRule, nextOccurrence, describeRRule } from '../utils/rrule.js';
 
@@ -39,12 +24,8 @@ export function nextDueFor(series, after, timeZone = 'UTC') {
   return nextOccurrence(rule, anchor, after, timeZone);
 }
 
-/**
- * Create the first instance for a brand-new series.
- * The first occurrence is the anchor itself if it is still in the future,
- * otherwise the next one after now — so creating "every Monday" on a Wednesday
- * doesn't immediately produce an overdue task.
- */
+// First instance: the anchor if still ahead, else the next occurrence after now, so "every Monday"
+// created on a Wednesday doesn't start overdue.
 export async function seedSeries(userId, seriesId, timeZone = 'UTC') {
   const series = await prisma.task.findFirst({ where: { id: seriesId, userId } });
   if (!series?.recurrence) return null;
@@ -78,13 +59,8 @@ export async function seedSeries(userId, seriesId, timeZone = 'UTC') {
   });
 }
 
-/**
- * Called when an instance is completed. Materialises the next occurrence.
- *
- * Uses the SERIES anchor rather than the completed instance's due date, so a
- * one-off reschedule ("move this Monday's to Tuesday") doesn't permanently
- * shift the whole series — a genuinely annoying bug in several popular apps.
- */
+// On completion, the next occurrence follows the series anchor, not this instance's due date, so
+// rescheduling one occurrence doesn't shift the whole series.
 export async function advanceSeries(userId, completedTask, timeZone = 'UTC') {
   if (!completedTask.seriesId) return null;
 
@@ -121,13 +97,8 @@ export async function advanceSeries(userId, completedTask, timeZone = 'UTC') {
   });
 }
 
-/**
- * Safety-net sweep: materialise instances for any series that has none open.
- *
- * Needed because a user can delete an instance outright, or a series can be
- * created while its first occurrence is far in the future. Runs hourly
- * alongside the calendar jobs.
- */
+// Safety net for a series left with no open instance (say, the user deleted it); startScheduler in
+// watchRenewal.js runs it hourly.
 export async function materialiseDue({ limit = 200 } = {}) {
   const series = await prisma.task.findMany({
     where: { recurrence: { not: null }, recurrenceEnded: false, seriesId: null },
@@ -188,12 +159,7 @@ export async function materialiseDue({ limit = 200 } = {}) {
   return { considered: series.length, created, ended };
 }
 
-/**
- * Editing a series. `scope` decides how far the change reaches:
- *   'this'   — only the given instance (a one-off tweak)
- *   'future' — the series template and the open instance
- *   'all'    — the series and every instance, including completed ones
- */
+// scope: 'this' edits one task; 'future' the series and its open instances; 'all' every instance too.
 export async function updateSeries(userId, taskId, updates, scope = 'this') {
   const task = await prisma.task.findFirst({ where: { id: taskId, userId } });
   if (!task) return null;

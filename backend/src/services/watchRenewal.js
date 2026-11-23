@@ -1,14 +1,5 @@
-/**
- * Watch-channel renewal.
- *
- * Google push channels expire (7 days max) and there is no renewal endpoint —
- * you open a new channel and let the old one lapse. Without this job, two-way
- * sync silently degrades to "only works when the user hits Sync" after a week,
- * which is a genuinely hard bug to notice in testing.
- *
- * Also acts as the safety net for anyone whose webhook never fires: any account
- * that hasn't synced in a while gets pulled.
- */
+// Google push channels expire and can't be renewed, so this reopens them before webhooks quietly
+// stop. pollStaleAccounts covers accounts whose webhook never fires.
 import prisma from '../config/db.js';
 import * as sync from './calendarSync.js';
 import { materialiseDue } from './recurrence.js';
@@ -65,11 +56,7 @@ export async function pollStaleAccounts({ olderThanMs = 6 * HOUR } = {}) {
   return { considered: stale.length, synced };
 }
 
-/**
- * In-process scheduler. Fine for a single instance; on multiple instances move
- * this to a real cron (Render Cron Job / Vercel Cron) hitting an admin route,
- * otherwise every instance duplicates the work.
- */
+// Every process that calls this runs the jobs; set DISABLE_CALENDAR_JOBS=true on extra instances.
 export function startScheduler() {
   if (process.env.DISABLE_CALENDAR_JOBS === 'true') return null;
   const timer = setInterval(() => {

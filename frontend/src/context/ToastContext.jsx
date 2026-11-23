@@ -1,13 +1,8 @@
 import { createContext, useContext, useState, useCallback, useRef } from 'react';
 import Icon from '../components/common/Icon.jsx';
 
-/**
- * Toasts.
- *
- * Tone rule: a failed action is an inconvenience, not an emergency. Errors use
- * --sync-error (a muted brick), never a saturated alarm red. On a screen where
- * several things can fail at once, saturated red makes the whole app feel broken.
- */
+// Errors use --sync-error, a muted brick, not alarm red: when several things fail at once,
+// saturated red makes the whole app feel broken.
 
 const ToastContext = createContext(null);
 

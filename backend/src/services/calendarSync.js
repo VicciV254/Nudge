@@ -1,15 +1,5 @@
-/**
- * Two-way sync between Nudge tasks and Google Calendar events.
- *
- * Direction rules (user-configurable via calendarSyncDirection):
- *   both  — push local changes AND pull remote ones
- *   push  — Nudge is the source of truth; remote edits are overwritten
- *   pull  — Google is the source of truth; we only mirror inbound
- *
- * Conflict policy: last-write-wins resolves the DATA, but we always record the
- * losing value in Task.conflictData so the UI can tell the human it happened.
- * Silent LWW is how users stop trusting a sync feature.
- */
+// Two-way sync between tasks and Google Calendar events. Conflicts resolve last-write-wins, but both
+// versions go in Task.conflictData so the user sees it happened: silent LWW costs their trust.
 import crypto from 'node:crypto';
 import prisma from '../config/db.js';
 import * as g from './googleClient.js';
@@ -132,15 +122,8 @@ export async function pushPending(userId, { limit = 100 } = {}) {
 
 // ---------------------------------------------------------------- pull
 
-/**
- * Incremental pull using Google's syncToken.
- *
- * Three constraints the API imposes, all handled here:
- *  1. nextSyncToken only appears on the LAST page — you must exhaust
- *     nextPageToken first or you'll store a page token by mistake.
- *  2. syncToken cannot be combined with timeMin/timeMax/q (HTTP 400).
- *  3. A stale token returns 410 — discard it and run a full resync.
- */
+// Google sends nextSyncToken only on the last page, rejects syncToken alongside timeMin/timeMax/q
+// (HTTP 400), and answers a stale one with 410, which triggers a full resync.
 export async function pullChanges(userId, { forceFull = false } = {}) {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user?.calendarSyncEnabled) return { skipped: 'sync-disabled' };
